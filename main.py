@@ -4,15 +4,22 @@ import os
 
 app = FastAPI()
 
-# Replace with your actual credentials or set them as environment variables
+# Initialize the TGTG client from environment variables
 client = TgtgClient(
     access_token=os.getenv("TGTG_ACCESS_TOKEN"),
     refresh_token=os.getenv("TGTG_REFRESH_TOKEN"),
-    user_id=os.getenv("TGTG_USER_ID"),
     cookie=os.getenv("TGTG_COOKIE")
 )
 
-@app.get("/check_food")
-async def check_food():
-    items = client.get_items()
-    return {"items": items}
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "TGTG API is running."}
+
+@app.get("/check")
+def check_items():
+    try:
+        items = client.get_items()
+        return {"count": len(items), "items": items}
+    except Exception as e:
+        return {"error": str(e)}
+
